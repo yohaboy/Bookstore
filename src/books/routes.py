@@ -1,6 +1,6 @@
 from fastapi import APIRouter ,status
 from src.books.book_list import Books
-from src.books.schema import BookModel
+from src.books.models import BookModel
 from fastapi.exceptions import HTTPException
 
 book_router = APIRouter()
