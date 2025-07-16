@@ -1,51 +1,27 @@
-from fastapi import FastAPI ,status
+from fastapi import APIRouter ,status
+from src.books.book_list import Books
+from src.books.schema import BookModel
 from fastapi.exceptions import HTTPException
-from pydantic import BaseModel
-from typing import Optional
 
-app = FastAPI()
+book_router = APIRouter()
 
-Books = [
-    {
-     'id':1,
-     'title' : 'The King',
-     'author' :'john zee',
-     'price':1200
-    },
-
-    {
-     'id':2,
-     'title' : 'Amongst US',
-     'author' :'suiii',
-     'price':90
-    },
-
-    {
-     'id':3,
-     'title' : 'Bright dawn',
-     'author' :'rock',
-     'price':870
-    }
-]
-
-class BookModel(BaseModel):
-    title : Optional[str] = None
-    author: Optional[str] = None
-    price : Optional[float] = None
-
-
-@app.get('/')
+@book_router.get('/')
 async def get_all_books() -> dict:
     return {'books':Books}
 
-@app.get('/{id}')
+@book_router.get('/{id}')
 async def get_a_book(id:int) -> dict:
     for book in Books:
         if book['id'] == id:
             return book
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail='Book not found')
 
-@app.patch('/{id}')
+@book_router.post('/add' ,status_code=status.HTTP_201_CREATED)
+async def add_book(book_data : BookModel):
+    Books.append(book_data.model_dump())
+    return {"message": "Book added successfully", "book": book_data}
+
+@book_router.patch('/{id}')
 async def update_a_book(id:int , book_data : BookModel) -> dict:
     for book in Books:
         if book['id'] == id:
@@ -54,7 +30,7 @@ async def update_a_book(id:int , book_data : BookModel) -> dict:
             return book
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail='Book not found')
 
-@app.delete('/{id}')
+@book_router.delete('/{id}')
 async def delete_a_book(id:int) -> dict:
     for book in Books:
         if book['id'] == id:
