@@ -3,8 +3,8 @@ from sqlalchemy.dialects import postgresql as pg
 from datetime import datetime
 import uuid
 
-class BookModel(SQLModel):
-    __tablename__ = "books table"
+class BookModel(SQLModel , table=True):
+    __tablename__ = "books_table"
     
     id : uuid.UUID = Field(
         sa_column=Column(
