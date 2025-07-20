@@ -5,4 +5,9 @@ class UserCreation(BaseModel):
     password:str
     username:str
 
+class UserLogin(BaseModel):
+    email:str
+    password:str
+    username:str
+
     

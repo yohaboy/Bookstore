@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
-from .models import User
+from src.Auth.models import User
+from src.Auth.schema import UserCreation
 
 class UserService():
     async def get_user(self, email:str , session:AsyncSession):
@@ -8,7 +9,7 @@ class UserService():
         user = await session.execute(statement)
         return user.scalar_one_or_none()
 
-    async def create_user(self, user_data : User, session :AsyncSession):
+    async def create_user(self, user_data : UserCreation, session :AsyncSession):
         user_dict = user_data.model_dump()
         user_email = user_dict["email"]
         user = await self.get_user(user_email ,session)

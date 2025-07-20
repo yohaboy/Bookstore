@@ -1,8 +1,8 @@
-from sqlmodel import SQLModel ,Field ,column
+from sqlmodel import SQLModel, Field
 
+class User(SQLModel, table=True):
+    email: str = Field(nullable=False, unique=True, index=True)
+    password: str = Field(nullable=False)
+    username: str = Field(nullable=False, unique=True, max_length=12)
 
-class User(SQLModel):
-    email:str = Field(nullable=False )
-    password:str = Field(min_length=6, exclude=True)
-    username:str = Field(max_length=12 ,unique=True)
 
