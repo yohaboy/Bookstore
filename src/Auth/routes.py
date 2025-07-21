@@ -12,7 +12,8 @@ async def signin(user_data:User,session:AsyncSession = Depends(get_session)):
     email = user_data.email
     user = await user_service.get_user(email ,session)
     if user:
-        return user
+        if user.password == user_data.password:
+            return user   
     raise HTTPException(status_code=status.HTTP_204_NO_CONTENT , detail="user not found ")
 
 @auth_route.post("signup")
