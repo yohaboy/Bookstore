@@ -15,7 +15,7 @@ class BookService():
         result = await session.exec(statment)
         return result.first()
     
-    async def add_book(self ,book_data:BookModel , session : AsyncSession):
+    async def add_book(self ,book_data:Book , session : AsyncSession):
         book_dict = book_data.model_dump()
         new_book = BookModel(
             **book_dict
@@ -24,7 +24,7 @@ class BookService():
         await session.commit()
         return new_book
     
-    async def update_a_book(self ,id:uuid.UUID, book_data:BookModel, session : AsyncSession):
+    async def update_a_book(self ,id:uuid.UUID, book_data:Book, session : AsyncSession):
         book_dict = book_data.model_dump()
         book = await self.get_a_book(id , session)
         for key,value in book_dict.items():
