@@ -6,8 +6,8 @@ from .services import UserService
 from .schema import UserCreation ,UserLogin
 from src.database.main import get_session
 from .utils import verify_hash ,create_access_token
+from .dependencies import current_user
 from datetime import timedelta
-
 
 auth_router = APIRouter()
 auth_service = UserService()
@@ -61,3 +61,7 @@ async def login(user_data: UserLogin , session:AsyncSession = Depends(get_sessio
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="wrong credentials"
         )
+@auth_router.post("/me")
+async def get_current_user(current_user:str = Depends(current_user)):
+    user = current_user
+    return user
