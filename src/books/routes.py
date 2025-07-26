@@ -4,12 +4,14 @@ from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.books.services import BookService
 from src.database.main import get_session
-from src.Auth.dependencies import AuthBearer
+from src.Auth.dependencies import AuthBearer, RoleBasedAccess
 from .schemas import Book, BooksResponse
 
 book_router = APIRouter()
 book_service = BookService()
 auth_bearer = AuthBearer()
+allowed_roles = RoleBasedAccess(allowed_roles=["admin"])
+
 
 @book_router.get('/' , response_model=BooksResponse)
 async def get_all_books(session : AsyncSession = Depends(get_session)) -> dict:
@@ -34,7 +36,7 @@ async def add_book(book_data : Book , session:AsyncSession = Depends(get_session
 
 
 @book_router.patch('/{id}' , response_model=BookModel)
-async def update_a_book(id:str , book_data : Book , session:AsyncSession = Depends(get_session), credentials = Depends(auth_bearer)) -> dict:
+async def update_a_book(id:str , book_data : Book , session:AsyncSession = Depends(get_session), credentials = Depends(auth_bearer), is_allowed:bool = Depends(allowed_roles)) -> dict:
     book = await book_service.update_a_book(id , book_data , session)
     if book:
         return {"books":book}
@@ -42,7 +44,7 @@ async def update_a_book(id:str , book_data : Book , session:AsyncSession = Depen
 
 
 @book_router.delete('/{id}' ,response_model=BookModel)
-async def delete_a_book(id:str , session:AsyncSession = Depends(get_session) , credentials = Depends(auth_bearer)) -> dict:
+async def delete_a_book(id:str , session:AsyncSession = Depends(get_session) , credentials = Depends(auth_bearer) , is_allowed:bool = Depends(allowed_roles)) -> dict:
     book = await book_service.delete_a_book(id ,session)
     if book:
         return {"books":book}

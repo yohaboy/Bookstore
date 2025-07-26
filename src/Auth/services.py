@@ -25,6 +25,7 @@ class UserService():
                 **user_data.model_dump(exclude={"password"})
             )
             new_user.password = password_hasher(user_data.password)
+            new_user.role = "user"
 
             session.add(new_user)
             await session.commit()

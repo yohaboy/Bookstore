@@ -6,11 +6,13 @@ from .services import UserService
 from .schema import UserCreation ,UserLogin
 from src.database.main import get_session
 from .utils import verify_hash ,create_access_token
-from .dependencies import current_user
+from .dependencies import current_user , RoleBasedAccess
 from datetime import timedelta
+
 
 auth_router = APIRouter()
 auth_service = UserService()
+allowed_roles = RoleBasedAccess(allowed_roles=["admin"])
 
 @auth_router.post('/signup' ,response_model=UserCreation)
 async def register(user_data:UserCreation , session:AsyncSession = Depends(get_session)):
@@ -35,14 +37,16 @@ async def login(user_data: UserLogin , session:AsyncSession = Depends(get_sessio
         access_token = create_access_token(
             user_data={
                 'email':user.email,
-                'username':user.username
+                'username':user.username,
+                'role':user.role
             }
         )
 
         refresh_token = create_access_token(
             user_data={
                 'email':user.email,
-                'username':user.username
+                'username':user.username,
+                'role':user.role
             },
             refresh=True,
             expiry=timedelta(days=3)

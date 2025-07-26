@@ -30,6 +30,14 @@ async def current_user(token_data:str = Depends(AuthBearer()) , session:AsyncSes
         return user
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or expired token")
 
-def access_level_checker(current_user:str = Depends(current_user)):
-    user = current_user
-    pass
+class RoleBasedAccess:
+    def __init__(self , allowed_roles:list):
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user = Depends(current_user)):
+        if current_user.role in self.allowed_roles:
+            return True
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not allowed to access this"
+        )
